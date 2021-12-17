@@ -92,6 +92,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="insertItem" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="itemTypeID" Type="int" Mode="In" />
+          <Parameter Name="itemName" Type="nvarchar" Mode="In" />
+          <Parameter Name="itemDescription" Type="nvarchar" Mode="In" />
+          <Parameter Name="sellerID" Type="int" Mode="In" />
+          <Parameter Name="minimumBidIncrement" Type="float" Mode="In" />
+          <Parameter Name="endDateTime" Type="datetime" Mode="In" />
+          <Parameter Name="currentPrice" Type="float" Mode="In" />
+        </Function>
         <Function Name="selectInfoBidsbyMemberID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="id" Type="int" Mode="In" />
         </Function>
@@ -104,6 +113,16 @@
         <Function Name="selectTopItemByPrice" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="selectTopItemByPriceAndItemTypeID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="updateItem" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="itemTypeID" Type="int" Mode="In" />
+          <Parameter Name="itemName" Type="nvarchar" Mode="In" />
+          <Parameter Name="itemDescription" Type="nvarchar" Mode="In" />
+          <Parameter Name="sellerID" Type="int" Mode="In" />
+          <Parameter Name="minimumBidIncrement" Type="float" Mode="In" />
+          <Parameter Name="endDateTime" Type="datetime" Mode="In" />
+          <Parameter Name="currentPrice" Type="float" Mode="In" />
+          <Parameter Name="itemID" Type="int" Mode="In" />
         </Function>
         <EntityContainer Name="AuctionModelStoreContainer">
           <EntitySet Name="Bids" EntityType="Self.Bids" Schema="dbo" store:Type="Tables" />
@@ -172,7 +191,26 @@
           </FunctionImport>
           <FunctionImport Name="selectTopItemByPrice" ReturnType="Collection(AuctionModel.selectTopItemByPrice_Result)" />
           <FunctionImport Name="selectTopItemByPriceAndItemTypeID" ReturnType="Collection(AuctionModel.selectTopItemByPriceAndItemTypeID_Result)">
-            <Parameter Name="id" Mode="In" Type="Int32" />
+          <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="insertItem">
+            <Parameter Name="itemTypeID" Mode="In" Type="Int32" />
+            <Parameter Name="itemName" Mode="In" Type="String" />
+            <Parameter Name="itemDescription" Mode="In" Type="String" />
+            <Parameter Name="sellerID" Mode="In" Type="Int32" />
+            <Parameter Name="minimumBidIncrement" Mode="In" Type="Double" />
+            <Parameter Name="endDateTime" Mode="In" Type="DateTime" />
+            <Parameter Name="currentPrice" Mode="In" Type="Double" />
+          </FunctionImport>
+          <FunctionImport Name="updateItem">
+            <Parameter Name="itemTypeID" Mode="In" Type="Int32" />
+            <Parameter Name="itemName" Mode="In" Type="String" />
+            <Parameter Name="itemDescription" Mode="In" Type="String" />
+            <Parameter Name="sellerID" Mode="In" Type="Int32" />
+            <Parameter Name="minimumBidIncrement" Mode="In" Type="Double" />
+            <Parameter Name="endDateTime" Mode="In" Type="DateTime" />
+            <Parameter Name="currentPrice" Mode="In" Type="Double" />
+            <Parameter Name="itemID" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <EntityType Name="ItemType">
@@ -411,6 +449,8 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="insertItem" FunctionName="AuctionModel.Store.insertItem" />
+          <FunctionImportMapping FunctionImportName="updateItem" FunctionName="AuctionModel.Store.updateItem" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

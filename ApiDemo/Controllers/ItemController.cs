@@ -130,7 +130,9 @@ namespace ApiDemo.Controllers
                 return entity;
             }
         }
-
+        
+        //insert
+        /*
         public HttpResponseMessage Post([FromBody] Item item)
         {
             try
@@ -151,7 +153,36 @@ namespace ApiDemo.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
             }
         }
-   
+        */
+
+        //insert by store procedure
+        public HttpResponseMessage Post([FromBody] Item item)
+        {
+            try
+            {
+                using (AuctionEntities entities = new AuctionEntities())
+                {
+                    entities.Configuration.ProxyCreationEnabled = false;
+                    entities.insertItem(item.ItemTypeID, 
+                        item.ItemName,
+                        item.ItemDescription,
+                        item.SellerID, 
+                        item.MinimumBidIncrement, 
+                        item.EndDateTime, 
+                        item.CurrentPrice);
+
+                    entities.SaveChanges();
+                    var message = Request.CreateResponse(HttpStatusCode.Created, item);
+                    message.Headers.Location = new Uri(Request.RequestUri +item.ToString());
+                    return message;
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
+            }
+        }
+
         public HttpResponseMessage Delete(int id)
         {
             try
@@ -177,7 +208,9 @@ namespace ApiDemo.Controllers
             }          
         }
 
-        public HttpResponseMessage Put(int id, [FromBody]Item item)
+        //update
+        /*
+          public HttpResponseMessage Put(int id, [FromBody]Item item)
         {
             try
             {
@@ -200,6 +233,40 @@ namespace ApiDemo.Controllers
                         entity.ItemTypeID = item.ItemTypeID;
                         entities.SaveChanges();
                         return Request.CreateResponse(HttpStatusCode.OK,entity);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
+            }
+        } */
+
+        //update by store procedure
+        public HttpResponseMessage Put(int id, [FromBody] Item item)
+        {
+            try
+            {
+                using (AuctionEntities entities = new AuctionEntities())
+                {
+                    entities.Configuration.ProxyCreationEnabled = false;
+                    Item entity = entities.Items.FirstOrDefault(i => i.ItemID == id);
+                    if (entity == null)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Item with Id = " + id.ToString() + " not found");
+                    }
+                    else
+                    {                       
+                        entities.updateItem(item.ItemTypeID,
+                            item.ItemName,
+                            item.ItemDescription,
+                            item.SellerID,
+                            item.MinimumBidIncrement,
+                            item.EndDateTime,
+                            item.CurrentPrice,
+                            entity.ItemID);
+                        entities.SaveChanges();
+                        return Request.CreateResponse(HttpStatusCode.OK);
                     }
                 }
             }

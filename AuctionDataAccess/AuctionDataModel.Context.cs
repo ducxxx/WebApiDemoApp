@@ -73,5 +73,75 @@ namespace AuctionDataAccess
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<selectTopItemByPriceAndItemTypeID_Result>("selectTopItemByPriceAndItemTypeID", idParameter);
         }
+    
+        public virtual int insertItem(Nullable<int> itemTypeID, string itemName, string itemDescription, Nullable<int> sellerID, Nullable<double> minimumBidIncrement, Nullable<System.DateTime> endDateTime, Nullable<double> currentPrice)
+        {
+            var itemTypeIDParameter = itemTypeID.HasValue ?
+                new ObjectParameter("itemTypeID", itemTypeID) :
+                new ObjectParameter("itemTypeID", typeof(int));
+    
+            var itemNameParameter = itemName != null ?
+                new ObjectParameter("itemName", itemName) :
+                new ObjectParameter("itemName", typeof(string));
+    
+            var itemDescriptionParameter = itemDescription != null ?
+                new ObjectParameter("itemDescription", itemDescription) :
+                new ObjectParameter("itemDescription", typeof(string));
+    
+            var sellerIDParameter = sellerID.HasValue ?
+                new ObjectParameter("sellerID", sellerID) :
+                new ObjectParameter("sellerID", typeof(int));
+    
+            var minimumBidIncrementParameter = minimumBidIncrement.HasValue ?
+                new ObjectParameter("minimumBidIncrement", minimumBidIncrement) :
+                new ObjectParameter("minimumBidIncrement", typeof(double));
+    
+            var endDateTimeParameter = endDateTime.HasValue ?
+                new ObjectParameter("endDateTime", endDateTime) :
+                new ObjectParameter("endDateTime", typeof(System.DateTime));
+    
+            var currentPriceParameter = currentPrice.HasValue ?
+                new ObjectParameter("currentPrice", currentPrice) :
+                new ObjectParameter("currentPrice", typeof(double));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertItem", itemTypeIDParameter, itemNameParameter, itemDescriptionParameter, sellerIDParameter, minimumBidIncrementParameter, endDateTimeParameter, currentPriceParameter);
+        }
+    
+        public virtual int updateItem(Nullable<int> itemTypeID, string itemName, string itemDescription, Nullable<int> sellerID, Nullable<double> minimumBidIncrement, Nullable<System.DateTime> endDateTime, Nullable<double> currentPrice, Nullable<int> itemID)
+        {
+            var itemTypeIDParameter = itemTypeID.HasValue ?
+                new ObjectParameter("itemTypeID", itemTypeID) :
+                new ObjectParameter("itemTypeID", typeof(int));
+    
+            var itemNameParameter = itemName != null ?
+                new ObjectParameter("itemName", itemName) :
+                new ObjectParameter("itemName", typeof(string));
+    
+            var itemDescriptionParameter = itemDescription != null ?
+                new ObjectParameter("itemDescription", itemDescription) :
+                new ObjectParameter("itemDescription", typeof(string));
+    
+            var sellerIDParameter = sellerID.HasValue ?
+                new ObjectParameter("sellerID", sellerID) :
+                new ObjectParameter("sellerID", typeof(int));
+    
+            var minimumBidIncrementParameter = minimumBidIncrement.HasValue ?
+                new ObjectParameter("minimumBidIncrement", minimumBidIncrement) :
+                new ObjectParameter("minimumBidIncrement", typeof(double));
+    
+            var endDateTimeParameter = endDateTime.HasValue ?
+                new ObjectParameter("endDateTime", endDateTime) :
+                new ObjectParameter("endDateTime", typeof(System.DateTime));
+    
+            var currentPriceParameter = currentPrice.HasValue ?
+                new ObjectParameter("currentPrice", currentPrice) :
+                new ObjectParameter("currentPrice", typeof(double));
+    
+            var itemIDParameter = itemID.HasValue ?
+                new ObjectParameter("itemID", itemID) :
+                new ObjectParameter("itemID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateItem", itemTypeIDParameter, itemNameParameter, itemDescriptionParameter, sellerIDParameter, minimumBidIncrementParameter, endDateTimeParameter, currentPriceParameter, itemIDParameter);
+        }
     }
 }
