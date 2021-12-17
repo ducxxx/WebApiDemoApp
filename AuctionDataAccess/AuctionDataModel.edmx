@@ -92,6 +92,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="deleteItem" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="itemId" Type="int" Mode="In" />
+        </Function>
         <Function Name="insertItem" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="itemTypeID" Type="int" Mode="In" />
           <Parameter Name="itemName" Type="nvarchar" Mode="In" />
@@ -211,6 +214,9 @@
             <Parameter Name="endDateTime" Mode="In" Type="DateTime" />
             <Parameter Name="currentPrice" Mode="In" Type="Double" />
             <Parameter Name="itemID" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="deleteItem">
+            <Parameter Name="itemId" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <EntityType Name="ItemType">
@@ -451,6 +457,7 @@
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="insertItem" FunctionName="AuctionModel.Store.insertItem" />
           <FunctionImportMapping FunctionImportName="updateItem" FunctionName="AuctionModel.Store.updateItem" />
+          <FunctionImportMapping FunctionImportName="deleteItem" FunctionName="AuctionModel.Store.deleteItem" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

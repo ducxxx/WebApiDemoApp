@@ -57,7 +57,7 @@ namespace ApiDemo.Controllers
            }
        }*/
 
-        //Join 2 tabale (Item and ItemType)
+        //Join 2 tabale by linq (Item and ItemType)
         /*
          public IEnumerable<object> Get()
         {
@@ -76,7 +76,7 @@ namespace ApiDemo.Controllers
         }
          */
 
-        //get data by join 2 table
+        //get data by join 3 by linq table
         /*
         public IEnumerable<object> Get()
         {
@@ -111,6 +111,7 @@ namespace ApiDemo.Controllers
         }
         */
         
+        //get top item byprice by strore procedure
         public IEnumerable<object> get()
         {
             using (AuctionEntities entities = new AuctionEntities())
@@ -183,6 +184,8 @@ namespace ApiDemo.Controllers
             }
         }
 
+        //method delete
+        /*
         public HttpResponseMessage Delete(int id)
         {
             try
@@ -207,7 +210,34 @@ namespace ApiDemo.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest,ex);
             }          
         }
+        */
 
+        //delete by store procedure
+        public HttpResponseMessage Delete(int id)
+        {
+            try
+            {
+                using (AuctionEntities entities = new AuctionEntities())
+                {
+                    entities.Configuration.ProxyCreationEnabled = false;
+                    Item item = entities.Items.FirstOrDefault(i => i.ItemID == id);
+                    if (item == null)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Item with Id = " + id.ToString() + " not found");
+                    }
+                    else
+                    {
+                        entities.deleteItem(id);
+                        entities.SaveChanges();
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
+            }
+        }
         //update
         /*
           public HttpResponseMessage Put(int id, [FromBody]Item item)

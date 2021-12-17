@@ -143,5 +143,14 @@ namespace AuctionDataAccess
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("updateItem", itemTypeIDParameter, itemNameParameter, itemDescriptionParameter, sellerIDParameter, minimumBidIncrementParameter, endDateTimeParameter, currentPriceParameter, itemIDParameter);
         }
+    
+        public virtual int deleteItem(Nullable<int> itemId)
+        {
+            var itemIdParameter = itemId.HasValue ?
+                new ObjectParameter("itemId", itemId) :
+                new ObjectParameter("itemId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteItem", itemIdParameter);
+        }
     }
 }
