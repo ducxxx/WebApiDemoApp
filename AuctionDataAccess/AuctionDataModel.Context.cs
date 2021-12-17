@@ -12,6 +12,8 @@ namespace AuctionDataAccess
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class AuctionEntities : DbContext
     {
@@ -27,5 +29,49 @@ namespace AuctionDataAccess
     
         public virtual DbSet<Item> Items { get; set; }
         public virtual DbSet<ItemType> ItemTypes { get; set; }
+        public virtual DbSet<Bid> Bids { get; set; }
+        public virtual DbSet<Member> Members { get; set; }
+        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
+    
+        public virtual ObjectResult<SelectItemById_Result> SelectItemById(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SelectItemById_Result>("SelectItemById", idParameter);
+        }
+    
+        public virtual ObjectResult<SelectItemByItemTypeId_Result> SelectItemByItemTypeId(Nullable<int> itemtypeid)
+        {
+            var itemtypeidParameter = itemtypeid.HasValue ?
+                new ObjectParameter("itemtypeid", itemtypeid) :
+                new ObjectParameter("itemtypeid", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SelectItemByItemTypeId_Result>("SelectItemByItemTypeId", itemtypeidParameter);
+        }
+    
+        public virtual ObjectResult<selectInfoBidsbyMemberID_Result> selectInfoBidsbyMemberID(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<selectInfoBidsbyMemberID_Result>("selectInfoBidsbyMemberID", idParameter);
+        }
+    
+        public virtual ObjectResult<selectTopItemByPrice_Result> selectTopItemByPrice()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<selectTopItemByPrice_Result>("selectTopItemByPrice");
+        }
+    
+        public virtual ObjectResult<selectTopItemByPriceAndItemTypeID_Result> selectTopItemByPriceAndItemTypeID(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("id", id) :
+                new ObjectParameter("id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<selectTopItemByPriceAndItemTypeID_Result>("selectTopItemByPriceAndItemTypeID", idParameter);
+        }
     }
 }

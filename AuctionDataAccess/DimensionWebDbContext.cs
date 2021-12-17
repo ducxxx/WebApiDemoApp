@@ -7,3 +7,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+namespace AuctionDataAccess
+{
+    internal class DimensionWebDbContext
+    {
+    }
+}

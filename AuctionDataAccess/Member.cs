@@ -12,24 +12,21 @@ namespace AuctionDataAccess
     using System;
     using System.Collections.Generic;
     
-    public partial class Item
+    public partial class Member
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Item()
+        public Member()
         {
             this.Bids = new HashSet<Bid>();
         }
     
-        public int ItemID { get; set; }
-        public int ItemTypeID { get; set; }
-        public string ItemName { get; set; }
-        public string ItemDescription { get; set; }
-        public int SellerID { get; set; }
-        public double MinimumBidIncrement { get; set; }
-        public System.DateTime EndDateTime { get; set; }
-        public double CurrentPrice { get; set; }
+        public int MemberId { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string Email { get; set; }
+        public System.DateTime Expirationdate { get; set; }
+        public string Password { get; set; }
     
-        public virtual ItemType ItemType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Bid> Bids { get; set; }
     }

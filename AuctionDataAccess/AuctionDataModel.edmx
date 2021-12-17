@@ -4,7 +4,17 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="AuctionModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="AuctionModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Bids">
+          <Key>
+            <PropertyRef Name="BidID" />
+          </Key>
+          <Property Name="BidID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ItemID" Type="int" Nullable="false" />
+          <Property Name="BidderID" Type="int" Nullable="false" />
+          <Property Name="BidDateTime" Type="datetime" Nullable="false" />
+          <Property Name="BidPrice" Type="float" Nullable="false" />
+        </EntityType>
         <EntityType Name="Items">
           <Key>
             <PropertyRef Name="ItemID" />
@@ -25,6 +35,51 @@
           <Property Name="ItemTypeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ItemTypeName" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="Members">
+          <Key>
+            <PropertyRef Name="MemberId" />
+          </Key>
+          <Property Name="MemberId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="50" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Expirationdate" Type="date" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
+        <Association Name="FK_Bid_Item">
+          <End Role="Items" Type="Self.Items" Multiplicity="1" />
+          <End Role="Bids" Type="Self.Bids" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Items">
+              <PropertyRef Name="ItemID" />
+            </Principal>
+            <Dependent Role="Bids">
+              <PropertyRef Name="ItemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Bid_Member">
+          <End Role="Members" Type="Self.Members" Multiplicity="1" />
+          <End Role="Bids" Type="Self.Bids" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Members">
+              <PropertyRef Name="MemberId" />
+            </Principal>
+            <Dependent Role="Bids">
+              <PropertyRef Name="BidderID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Items_ItemTypes">
           <End Role="ItemTypes" Type="Self.ItemTypes" Multiplicity="1" />
           <End Role="Items" Type="Self.Items" Multiplicity="*" />
@@ -37,16 +92,39 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="selectInfoBidsbyMemberID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="SelectItemById" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="SelectItemByItemTypeId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="itemtypeid" Type="int" Mode="In" />
+        </Function>
+        <Function Name="selectTopItemByPrice" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="selectTopItemByPriceAndItemTypeID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
         <EntityContainer Name="AuctionModelStoreContainer">
+          <EntitySet Name="Bids" EntityType="Self.Bids" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Items" EntityType="Self.Items" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ItemTypes" EntityType="Self.ItemTypes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Members" EntityType="Self.Members" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Bid_Item" Association="Self.FK_Bid_Item">
+            <End Role="Items" EntitySet="Items" />
+            <End Role="Bids" EntitySet="Bids" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Bid_Member" Association="Self.FK_Bid_Member">
+            <End Role="Members" EntitySet="Members" />
+            <End Role="Bids" EntitySet="Bids" />
+          </AssociationSet>
           <AssociationSet Name="FK_Items_ItemTypes" Association="Self.FK_Items_ItemTypes">
             <End Role="ItemTypes" EntitySet="ItemTypes" />
             <End Role="Items" EntitySet="Items" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="AuctionModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -62,36 +140,157 @@
           <Property Name="MinimumBidIncrement" Type="Double" Nullable="false" />
           <Property Name="EndDateTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="CurrentPrice" Type="Double" Nullable="false" />
-          <NavigationProperty Name="ItemType" Relationship="Self.FK_Items_ItemTypes" FromRole="Items" ToRole="ItemTypes" />
+          <NavigationProperty Name="ItemType" Relationship="AuctionModel.FK_Items_ItemTypes" FromRole="Item" ToRole="ItemType" />
+          <NavigationProperty Name="Bids" Relationship="AuctionModel.FK_Bid_Item" FromRole="Item" ToRole="Bid" />
         </EntityType>
+        <EntityContainer Name="AuctionEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Items" EntityType="Self.Item" />
+          <EntitySet Name="ItemTypes" EntityType="AuctionModel.ItemType" />
+          <AssociationSet Name="FK_Items_ItemTypes" Association="AuctionModel.FK_Items_ItemTypes">
+            <End Role="ItemType" EntitySet="ItemTypes" />
+            <End Role="Item" EntitySet="Items" />
+          </AssociationSet>
+          <EntitySet Name="Bids" EntityType="AuctionModel.Bid" />
+          <EntitySet Name="Members" EntityType="AuctionModel.Member" />
+          <EntitySet Name="sysdiagrams" EntityType="AuctionModel.sysdiagram" />
+          <AssociationSet Name="FK_Bid_Item" Association="AuctionModel.FK_Bid_Item">
+            <End Role="Item" EntitySet="Items" />
+            <End Role="Bid" EntitySet="Bids" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Bid_Member" Association="AuctionModel.FK_Bid_Member">
+            <End Role="Member" EntitySet="Members" />
+            <End Role="Bid" EntitySet="Bids" />
+          </AssociationSet>
+          <FunctionImport Name="SelectItemById" ReturnType="Collection(AuctionModel.SelectItemById_Result)">
+          <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="SelectItemByItemTypeId" ReturnType="Collection(AuctionModel.SelectItemByItemTypeId_Result)">
+          <Parameter Name="itemtypeid" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="selectInfoBidsbyMemberID" ReturnType="Collection(AuctionModel.selectInfoBidsbyMemberID_Result)">
+          <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="selectTopItemByPrice" ReturnType="Collection(AuctionModel.selectTopItemByPrice_Result)" />
+          <FunctionImport Name="selectTopItemByPriceAndItemTypeID" ReturnType="Collection(AuctionModel.selectTopItemByPriceAndItemTypeID_Result)">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
         <EntityType Name="ItemType">
           <Key>
             <PropertyRef Name="ItemTypeID" />
           </Key>
           <Property Name="ItemTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ItemTypeName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Items" Relationship="Self.FK_Items_ItemTypes" FromRole="ItemTypes" ToRole="Items" />
+          <Property Name="ItemTypeName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Items" Relationship="AuctionModel.FK_Items_ItemTypes" FromRole="ItemType" ToRole="Item" />
         </EntityType>
         <Association Name="FK_Items_ItemTypes">
-          <End Role="ItemTypes" Type="Self.ItemType" Multiplicity="1" />
-          <End Role="Items" Type="Self.Item" Multiplicity="*" />
+          <End Type="AuctionModel.ItemType" Role="ItemType" Multiplicity="1" />
+          <End Type="AuctionModel.Item" Role="Item" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="ItemTypes">
+            <Principal Role="ItemType">
               <PropertyRef Name="ItemTypeID" />
             </Principal>
-            <Dependent Role="Items">
+            <Dependent Role="Item">
               <PropertyRef Name="ItemTypeID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="AuctionEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Items" EntityType="Self.Item" />
-          <EntitySet Name="ItemTypes" EntityType="Self.ItemType" />
-          <AssociationSet Name="FK_Items_ItemTypes" Association="Self.FK_Items_ItemTypes">
-            <End Role="ItemTypes" EntitySet="ItemTypes" />
-            <End Role="Items" EntitySet="Items" />
-          </AssociationSet>
-        </EntityContainer>
+        <EntityType Name="Bid">
+          <Key>
+            <PropertyRef Name="BidID" />
+          </Key>
+          <Property Name="BidID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ItemID" Type="Int32" Nullable="false" />
+          <Property Name="BidderID" Type="Int32" Nullable="false" />
+          <Property Name="BidDateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="BidPrice" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Item" Relationship="AuctionModel.FK_Bid_Item" FromRole="Bid" ToRole="Item" />
+          <NavigationProperty Name="Member" Relationship="AuctionModel.FK_Bid_Member" FromRole="Bid" ToRole="Member" />
+        </EntityType>
+        <EntityType Name="Member">
+          <Key>
+            <PropertyRef Name="MemberId" />
+          </Key>
+          <Property Name="MemberId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Expirationdate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Bids" Relationship="AuctionModel.FK_Bid_Member" FromRole="Member" ToRole="Bid" />
+        </EntityType>
+        <EntityType Name="sysdiagram">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <Association Name="FK_Bid_Item">
+          <End Type="AuctionModel.Item" Role="Item" Multiplicity="1" />
+          <End Type="AuctionModel.Bid" Role="Bid" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Item">
+              <PropertyRef Name="ItemID" />
+            </Principal>
+            <Dependent Role="Bid">
+              <PropertyRef Name="ItemID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Bid_Member">
+          <End Type="AuctionModel.Member" Role="Member" Multiplicity="1" />
+          <End Type="AuctionModel.Bid" Role="Bid" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Member">
+              <PropertyRef Name="MemberId" />
+            </Principal>
+            <Dependent Role="Bid">
+              <PropertyRef Name="BidderID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="SelectItemById_Result">
+          <Property Type="Int32" Name="ItemID" Nullable="false" />
+          <Property Type="Int32" Name="ItemTypeID" Nullable="false" />
+          <Property Type="String" Name="ItemName" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="ItemDescription" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="SellerID" Nullable="false" />
+          <Property Type="Double" Name="MinimumBidIncrement" Nullable="false" />
+          <Property Type="DateTime" Name="EndDateTime" Nullable="false" Precision="23" />
+          <Property Type="Double" Name="CurrentPrice" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="SelectItemByItemTypeId_Result">
+          <Property Type="Int32" Name="ItemID" Nullable="false" />
+          <Property Type="String" Name="ItemName" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="ItemTypeName" Nullable="false" MaxLength="50" />
+          <Property Type="Double" Name="CurrentPrice" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="selectInfoBidsbyMemberID_Result">
+          <Property Type="Int32" Name="BidID" Nullable="false" />
+          <Property Type="Int32" Name="ItemID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="Double" Name="BidPrice" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="selectTopItemByPrice_Result">
+          <Property Type="Int32" Name="ItemID" Nullable="false" />
+          <Property Type="Int32" Name="ItemTypeID" Nullable="false" />
+          <Property Type="String" Name="ItemName" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="ItemDescription" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="SellerID" Nullable="false" />
+          <Property Type="Double" Name="MinimumBidIncrement" Nullable="false" />
+          <Property Type="DateTime" Name="EndDateTime" Nullable="false" Precision="23" />
+          <Property Type="Double" Name="CurrentPrice" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="selectTopItemByPriceAndItemTypeID_Result">
+          <Property Type="Int32" Name="ItemID" Nullable="false" />
+          <Property Type="String" Name="ItemName" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="ItemTypeName" Nullable="false" MaxLength="50" />
+          <Property Type="Double" Name="CurrentPrice" Nullable="false" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -115,11 +314,103 @@
           <EntitySetMapping Name="ItemTypes">
             <EntityTypeMapping TypeName="AuctionModel.ItemType">
               <MappingFragment StoreEntitySet="ItemTypes">
-                <ScalarProperty Name="ItemTypeID" ColumnName="ItemTypeID" />
                 <ScalarProperty Name="ItemTypeName" ColumnName="ItemTypeName" />
+                <ScalarProperty Name="ItemTypeID" ColumnName="ItemTypeID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Bids">
+            <EntityTypeMapping TypeName="AuctionModel.Bid">
+              <MappingFragment StoreEntitySet="Bids">
+                <ScalarProperty Name="BidPrice" ColumnName="BidPrice" />
+                <ScalarProperty Name="BidDateTime" ColumnName="BidDateTime" />
+                <ScalarProperty Name="BidderID" ColumnName="BidderID" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="BidID" ColumnName="BidID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Members">
+            <EntityTypeMapping TypeName="AuctionModel.Member">
+              <MappingFragment StoreEntitySet="Members">
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Expirationdate" ColumnName="Expirationdate" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="MemberId" ColumnName="MemberId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="AuctionModel.sysdiagram">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="SelectItemById" FunctionName="AuctionModel.Store.SelectItemById">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="AuctionModel.SelectItemById_Result">
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="ItemTypeID" ColumnName="ItemTypeID" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="ItemDescription" ColumnName="ItemDescription" />
+                <ScalarProperty Name="SellerID" ColumnName="SellerID" />
+                <ScalarProperty Name="MinimumBidIncrement" ColumnName="MinimumBidIncrement" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="CurrentPrice" ColumnName="CurrentPrice" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SelectItemByItemTypeId" FunctionName="AuctionModel.Store.SelectItemByItemTypeId">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="AuctionModel.SelectItemByItemTypeId_Result">
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="ItemTypeName" ColumnName="ItemTypeName" />
+                <ScalarProperty Name="CurrentPrice" ColumnName="CurrentPrice" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="selectInfoBidsbyMemberID" FunctionName="AuctionModel.Store.selectInfoBidsbyMemberID">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="AuctionModel.selectInfoBidsbyMemberID_Result">
+                <ScalarProperty Name="BidID" ColumnName="BidID" />
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="BidPrice" ColumnName="BidPrice" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="selectTopItemByPrice" FunctionName="AuctionModel.Store.selectTopItemByPrice">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="AuctionModel.selectTopItemByPrice_Result">
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="ItemTypeID" ColumnName="ItemTypeID" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="ItemDescription" ColumnName="ItemDescription" />
+                <ScalarProperty Name="SellerID" ColumnName="SellerID" />
+                <ScalarProperty Name="MinimumBidIncrement" ColumnName="MinimumBidIncrement" />
+                <ScalarProperty Name="EndDateTime" ColumnName="EndDateTime" />
+                <ScalarProperty Name="CurrentPrice" ColumnName="CurrentPrice" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="selectTopItemByPriceAndItemTypeID" FunctionName="AuctionModel.Store.selectTopItemByPriceAndItemTypeID">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="AuctionModel.selectTopItemByPriceAndItemTypeID_Result">
+                <ScalarProperty Name="ItemID" ColumnName="ItemID" />
+                <ScalarProperty Name="ItemName" ColumnName="ItemName" />
+                <ScalarProperty Name="ItemTypeName" ColumnName="ItemTypeName" />
+                <ScalarProperty Name="CurrentPrice" ColumnName="CurrentPrice" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

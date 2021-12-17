@@ -10,16 +10,9 @@
 namespace AuctionDataAccess
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class Item
+    public partial class selectTopItemByPrice_Result
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Item()
-        {
-            this.Bids = new HashSet<Bid>();
-        }
-    
         public int ItemID { get; set; }
         public int ItemTypeID { get; set; }
         public string ItemName { get; set; }
@@ -28,9 +21,5 @@ namespace AuctionDataAccess
         public double MinimumBidIncrement { get; set; }
         public System.DateTime EndDateTime { get; set; }
         public double CurrentPrice { get; set; }
-    
-        public virtual ItemType ItemType { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Bid> Bids { get; set; }
     }
 }

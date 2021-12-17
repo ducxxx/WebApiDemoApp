@@ -5,9 +5,14 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="bf68d488688f4bba842f4cfa23c8c158" Name="Diagram1">
-        <EntityTypeShape EntityType="AuctionModel.Item" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="AuctionModel.ItemType" Width="1.5" PointX="0.75" PointY="1.5" IsExpanded="true" />
-        <AssociationConnector Association="AuctionModel.FK_Items_ItemTypes" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="AuctionModel.Item" Width="1.5" PointX="3.75" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="AuctionModel.ItemType" Width="1.5" PointX="1.375" PointY="1.375" />
+        <AssociationConnector Association="AuctionModel.FK_Items_ItemTypes" />
+        <EntityTypeShape EntityType="AuctionModel.Bid" Width="1.5" PointX="6.25" PointY="1" />
+        <EntityTypeShape EntityType="AuctionModel.Member" Width="1.5" PointX="4" PointY="5" />
+        <EntityTypeShape EntityType="AuctionModel.sysdiagram" Width="1.5" PointX="0.75" PointY="3.75" />
+        <AssociationConnector Association="AuctionModel.FK_Bid_Item" />
+        <AssociationConnector Association="AuctionModel.FK_Bid_Member" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -1,4 +1,5 @@
-﻿using ItemDataAccess;
+﻿
+using AuctionDataAccess;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,18 +12,24 @@ namespace ApiDemo.Controllers
 {
     public class ItemController : ApiController
     {
-        public IEnumerable<Item> get()
+        /*
+         * public IEnumerable<Item> get()
         {
              using(AuctionEntities entities = new AuctionEntities())
             {
-                
+                entities.Configuration.ProxyCreationEnabled = false;
                 return entities.Items.ToList();
             }
         }
-        public HttpResponseMessage Get(int id)
+        */
+
+        // Get Item By id 
+        /*
+         public HttpResponseMessage Get(int id)
         {
             using (AuctionEntities entities = new AuctionEntities())
             {
+                entities.Configuration.ProxyCreationEnabled = false;
                 var entity = entities.Items.FirstOrDefault(i=>i.ItemID==id);
                 if (entity != null)
                 {
@@ -35,14 +42,104 @@ namespace ApiDemo.Controllers
                 }
             }
         }
+        */
+
+
+        // Get Count Item By ItemType 
+
+        /*public int Get(int id)
+       {
+           using (AuctionEntities entities = new AuctionEntities())
+           {
+               entities.Configuration.ProxyCreationEnabled = false;
+               int count = (from i in entities.Items where i.ItemTypeID == id select i).Count();
+               return count;
+           }
+       }*/
+
+        //Join 2 tabale (Item and ItemType)
+        /*
+         public IEnumerable<object> Get()
+        {
+            using (AuctionEntities entities = new AuctionEntities())
+            {
+                entities.Configuration.ProxyCreationEnabled = false;
+                var kq = (from i in entities.Items
+                             join it in entities.ItemTypes on i.ItemTypeID equals it.ItemTypeID                              
+                             select new { 
+                                 i.ItemID, 
+                                 ItemName = i.ItemName,
+                                 ItemTypeName= it.ItemTypeName                                 
+                             }).ToList();
+                return kq;
+            }
+        }
+         */
+
+        //get data by join 2 table
+        /*
+        public IEnumerable<object> Get()
+        {
+            using (AuctionEntities entities = new AuctionEntities())
+            {
+                entities.Configuration.ProxyCreationEnabled = false;
+                var kq = (from i in entities.Items
+                             join it in entities.ItemTypes on i.ItemTypeID equals it.ItemTypeID
+                             join b in entities.Bids on i.ItemID equals b.ItemID    
+                             select new { 
+                                 i.ItemID, 
+                                 ItemName = i.ItemName,
+                                 ItemTypeName= it.ItemTypeName,
+                                 BidId=b.BidID,
+                                 BidPrice=b.BidPrice
+                             }).ToList();
+                return kq;
+            }
+        }
+        */
+
+        //use store procedure select 2 table
+        //SelectItemByItemTypeId
+        /*
+        public IEnumerable<object> get(int id)
+        {
+            using (AuctionEntities entities = new AuctionEntities())
+            {
+                entities.Configuration.ProxyCreationEnabled = false;
+                return entities.SelectItemByItemTypeId(id).ToList();
+            }
+        }
+        */
+        
+        public IEnumerable<object> get()
+        {
+            using (AuctionEntities entities = new AuctionEntities())
+            {
+                entities.Configuration.ProxyCreationEnabled = false;
+                var entity = entities.selectTopItemByPrice().ToList();
+                return entity; 
+            }
+        }
+
+        public IEnumerable<object> get(int id)
+        {
+            using (AuctionEntities entities = new AuctionEntities())
+            {
+                entities.Configuration.ProxyCreationEnabled = false;
+                var entity = entities.selectTopItemByPriceAndItemTypeID(id).ToList();
+                return entity;
+            }
+        }
+
         public HttpResponseMessage Post([FromBody] Item item)
         {
             try
             {
                 using (AuctionEntities entities = new AuctionEntities())
                 {
-
+                    entities.Configuration.ProxyCreationEnabled = false;
                     entities.Items.Add(item);
+                    
                     entities.SaveChanges();
                     var message = Request.CreateResponse(HttpStatusCode.Created, item);
                     message.Headers.Location = new Uri(Request.RequestUri + item.ItemID.ToString());
@@ -54,15 +151,62 @@ namespace ApiDemo.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
             }
         }
-        [HttpDelete]
-        public void Delete(int id)
+   
+        public HttpResponseMessage Delete(int id)
         {
-            using (AuctionEntities entities = new AuctionEntities())
+            try
             {
-                Item item = entities.Items.FirstOrDefault(i => i.ItemID == id);
-                entities.Items.Remove(item);
+                using (AuctionEntities entities = new AuctionEntities())
+                {
+                    entities.Configuration.ProxyCreationEnabled = false;
+                    Item item = entities.Items.FirstOrDefault(i => i.ItemID == id);
+                    if (item == null)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Item with Id = " + id.ToString() + " not found");
+                    }
+                    else{
+                        entities.Items.Remove(item);
+                        entities.SaveChanges();
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    }
+                }
             }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest,ex);
+            }          
         }
 
+        public HttpResponseMessage Put(int id, [FromBody]Item item)
+        {
+            try
+            {
+                using (AuctionEntities entities = new AuctionEntities())
+                {
+                    entities.Configuration.ProxyCreationEnabled = false;
+                    Item entity = entities.Items.FirstOrDefault(i => i.ItemID == id);
+                    if (entity == null)
+                    {
+                        return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Item with Id = " + id.ToString() + " not found");
+                    }
+                    else
+                    {
+                        entity.ItemDescription = item.ItemDescription;
+                        entity.MinimumBidIncrement=item.MinimumBidIncrement;
+                        entity.EndDateTime = item.EndDateTime;  
+                        entity.ItemName= item.ItemName;
+                        entity.CurrentPrice = item.CurrentPrice;
+                        entity.SellerID = item.SellerID;
+                        entity.ItemTypeID = item.ItemTypeID;
+                        entities.SaveChanges();
+                        return Request.CreateResponse(HttpStatusCode.OK,entity);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ex);
+            }
+        }
     }
 }
